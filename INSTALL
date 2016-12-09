@@ -1,0 +1,9 @@
+Building ECOcoin
+
+See doc/readme-qt.rst for instructions on building ecocoin Qt,
+the intended-for-end-users, nice-graphical-interface, reference
+implementation of ECOcoin.
+
+See doc/build-*.txt for instructions on building ecocoind,
+the intended-for-services, no-graphical-interface, reference
+implementation of ECOcoin.

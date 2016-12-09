@@ -1,0 +1,68 @@
+#!/bin/sh
+
+# PROVIDE: ecocoin
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+#
+# Add the following lines to /etc/rc.conf.local or /etc/rc.conf
+# to enable this service:
+#
+# ecocoin_enable (bool): Set to NO by default. Set this variable to YES if you want to enable ecocoin service.
+# ecocoin_config (path): Set to /usr/local/etc/ecocoin.conf by default.
+# ecocoin_user:  The user account ecocoin daemon runs as. It uses 'root' user by default.
+# ecocoin_group: The group account ecocoin daemon runs as. It uses 'wheel' group by default.
+# ecocoin_datadir (str): Default to "/var/db/ecocoin". Base data directory.
+
+. /etc/rc.subr
+
+name=ecocoin
+rcvar=ecocoin_enable
+
+: ${ecocoin_enable:=NO}
+: ${ecocoin_config=/usr/local/etc/ecocoin.conf}
+: ${ecocoin_datadir=/var/db/ecocoin}
+: ${ecocoin_user="root"}
+: ${ecocoin_group="wheel"}
+
+required_files=${ecocoin_config}
+command=/usr/local/bin/ecocoind
+ecocoin_chdir=${ecocoin_datadir}
+pidfile="${ecocoin_datadir}/ecocoind.pid"
+stop_cmd=ecocoin_stop
+command_args="-conf=${ecocoin_config} -datadir=${ecocoin_datadir} -daemon -pid=${pidfile}"
+start_precmd="${name}_prestart"
+
+ecocoin_create_datadir()
+{
+	echo "Creating data directory"
+	eval mkdir -p ${ecocoin_datadir}
+	[ $? -eq 0 ] && chown -R ${ecocoin_user}:${ecocoin_group} ${ecocoin_datadir}
+}
+
+ecocoin_prestart()
+{
+	if [ ! -d "${ecocoin_datadir}/." ]; then
+		ecocoin_create_datadir || return 1
+	fi
+}
+
+ecocoin_requirepidfile()
+{
+	if [ ! "0`check_pidfile ${pidfile} ${command}`" -gt 1 ]; then
+		echo "${name} not running? (check $pidfile)."
+		exit 1
+	fi
+}
+
+ecocoin_stop()
+{
+    ecocoin_requirepidfile
+
+	echo "Stopping ${name}."
+	eval ${command} -conf=${ecocoin_config} -datadir=${ecocoin_datadir} stop
+	wait_for_pids ${rc_pid}
+}
+
+load_rc_config $name
+run_rc_command "$1"

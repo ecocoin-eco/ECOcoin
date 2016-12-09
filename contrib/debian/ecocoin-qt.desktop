@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=ecocoin
+Comment=ECOcoin P2P Cryptocurrency
+Exec=/usr/bin/ecocoin-qt
+Terminal=false
+Type=Application
+Icon=/usr/share/pixmaps/ecocoin80.xpm
+MimeType=x-scheme-handler/ecocoin;
+Categories=Office;

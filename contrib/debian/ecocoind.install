@@ -1,0 +1,2 @@
+debian/bin/ecocoind usr/bin
+src/ecocoind usr/lib/ecocoin
